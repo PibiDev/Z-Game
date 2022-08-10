@@ -11,9 +11,12 @@ public class ShootController : MonoBehaviour
     float timeUntilFire;
     PlayerController pC;
 
-    [HideInInspector] public float aim;
-    [HideInInspector] public float aim2;
+    [HideInInspector] public float aim; // Left click
+    [HideInInspector] public float aim2;// Right click
     private Animator aimAnimation;
+
+    TextSwitch tS;
+    AmmoText aT;
 
     // Start is called before the first frame update
     void Start()
@@ -21,6 +24,8 @@ public class ShootController : MonoBehaviour
         fireRate = 1;
         pC = gameObject.GetComponent<PlayerController>();
         aimAnimation = GetComponent<Animator>();
+        tS = GameObject.Find("AmmoText").GetComponent<TextSwitch>();
+        aT = GameObject.Find("AmmoText").GetComponent<AmmoText>();
     }
 
     // Update is called once per frame
@@ -32,9 +37,19 @@ public class ShootController : MonoBehaviour
         aim2 = Input.GetAxisRaw("Shoot"); //(Left)click 0, space bar
         aimAnimation.SetBool("IsShooting", false); //Turn off IsShooting parameter on the animator (Aiming2 -> Shooting)
         
-        if(((aim2 > 0 && timeUntilFire < Time.time) && aim > 0) && (pC.direccion == Vector2.zero)){//Player can shoot only if right mouse button is pressing and player are not moving (direccion = 0)
+        if (aim > 0){
+            tS.enabled = true;
+        }
+
+        if(((aim2 > 0 && timeUntilFire < Time.time) && aim > 0) && aT.ammoAmount > 0){//Player can shoot only if right mouse button is pressing and player
             Shoot();
+            aT.ammoAmount--;
             timeUntilFire = Time.time + fireRate;
+        }
+
+        if(((aim2 > 0 && timeUntilFire < Time.time) && aim > 0) && aT.ammoAmount <= 0){
+            Debug.Log("out of ammo");
+            // need sound efect
         }
     }
 

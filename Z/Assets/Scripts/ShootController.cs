@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ShootController : MonoBehaviour
 {
@@ -17,6 +18,11 @@ public class ShootController : MonoBehaviour
 
     TextSwitch tS;
     AmmoText aT;
+    bool isReloading = false;
+
+    Inventory inventory;
+    RevolverAmmoItem revolverAmmoItem;
+    //bool reload;
 
     // Start is called before the first frame update
     void Start()
@@ -26,6 +32,8 @@ public class ShootController : MonoBehaviour
         aimAnimation = GetComponent<Animator>();
         tS = GameObject.Find("AmmoText").GetComponent<TextSwitch>();
         aT = GameObject.Find("AmmoText").GetComponent<AmmoText>();
+        inventory = gameObject.GetComponent<Inventory>();
+        revolverAmmoItem = GameObject.Find("Revolver Ammo").GetComponent<RevolverAmmoItem>();
     }
 
     // Update is called once per frame
@@ -37,13 +45,53 @@ public class ShootController : MonoBehaviour
         aim2 = Input.GetAxisRaw("Shoot"); //(Left)click 0, space bar
         aimAnimation.SetBool("IsShooting", false); //Turn off IsShooting parameter on the animator (Aiming2 -> Shooting)
         
+        //reload = Input.GetKeyDown(KeyCode.R); // R
+
+        //isReloading = false;
+
+        if (aT.ammoAmount == 6 && Input.GetKeyDown(KeyCode.R))
+        {
+                Debug.Log("can't reload");
+                return;
+        }
+
+        if (aT.ammoAmount < 6 && Input.GetKeyDown(KeyCode.R)) // Reload "R"
+        {
+            Debug.Log("R");
+
+            if (isReloading)
+            {
+                Debug.Log("isReloading return");
+                return;
+            }
+
+            for (int i = 0; i < inventory.bag.Count; i++){
+                if (inventory.bag[i].GetComponent<RevolverAmmoItem>())
+                {
+                    Debug.Log("bullet = true");
+                    //isReloading = true;
+                    StartCoroutine(Reload());
+                    //aT.ammoAmount += revolverAmmoItem.ammo;
+                    //delete bullet item from inventory
+                    DeleteAmmoInventory(i);
+                    //inventory.bag[i].GetComponent<Image>().enabled = false;
+                    //inventory.bag[i].GetComponent<Image>().sprite = null;
+                    //Destroy(inventory.bag[i].GetComponent<RevolverAmmoItem>());
+                    //End of reloading
+                    //isReloading = false;
+                    //return;       
+                    break;
+                }
+            }
+        }
+
         if (aim > 0){
             tS.enabled = true;
         }
 
         if(((aim2 > 0 && timeUntilFire < Time.time) && aim > 0) && aT.ammoAmount > 0){//Player can shoot only if right mouse button is pressing and player
             Shoot();
-            aT.ammoAmount--;
+            aT.ammoAmount--; //bullet counter -1
             timeUntilFire = Time.time + fireRate;
         }
 
@@ -51,6 +99,8 @@ public class ShootController : MonoBehaviour
             Debug.Log("out of ammo");
             // need sound efect
         }
+
+        
     }
 
     void Shoot(){ //Function wich set the shoot direction
@@ -70,5 +120,21 @@ public class ShootController : MonoBehaviour
     void ShootingAnimation(){ //Animation for shooting the weapon
         bool aiming2 = aim2 !=0 ? true : false;
         aimAnimation.SetBool("IsShooting", aiming2); //Shoot the weapon
+    }
+
+    IEnumerator Reload(){
+        isReloading = true;
+        Debug.Log("Reloadin");
+        //add reloaging animation
+        yield return new WaitForSeconds(1);
+        Debug.Log("Reloaded");
+        aT.ammoAmount += revolverAmmoItem.ammo;
+        isReloading = false;
+    }
+
+    void DeleteAmmoInventory(int id){
+        inventory.bag[id].GetComponent<Image>().enabled = false;
+        inventory.bag[id].GetComponent<Image>().sprite = null;
+        Destroy(inventory.bag[id].GetComponent<RevolverAmmoItem>());
     }
 }

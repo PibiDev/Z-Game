@@ -13,7 +13,7 @@ public class AmmoText : MonoBehaviour
     {
         text = GetComponent<Text>(); 
         text.enabled = false;
-        ammoAmount = 6;
+        ammoAmount = 0;
     }
 
     // Update is called once per frame

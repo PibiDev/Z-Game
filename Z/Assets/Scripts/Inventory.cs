@@ -8,6 +8,7 @@ public class Inventory : MonoBehaviour
     public List<GameObject> bag = new List<GameObject>(); // List to store items
     public GameObject inv;
     public bool activate_inv;
+
     PlayerController playerController;
     ShootController shootController;
 
@@ -19,20 +20,31 @@ public class Inventory : MonoBehaviour
     public GameObject selector;
     public int ID;
 
+    AmmoText ammoText;
+
+    [SerializeField]
+    ItemDescription itemDescription;
+    string title;
+    string description;
+    Sprite iSprite;
+
+    void Awake(){
+        //itemDescription.ResetDescription();
+    }
+
     // Start is called before the first frame update
     void Start()
     {
         playerController = gameObject.GetComponent<PlayerController>();
         shootController = gameObject.GetComponent<ShootController>();
         takeItemText = GameObject.Find("Take Item").GetComponent<TakeItemText>();
-         
     }
 
     // Update is called once per frame
     void Update()
     {
 
-        Navegar();
+        //Navegar();
 
         take = Input.GetAxisRaw("Interact"); // E
 
@@ -42,10 +54,18 @@ public class Inventory : MonoBehaviour
                 
                 for (int i = 0; i < bag.Count; i++)
                 {
+                    //if is ammo and ammo <= 5 then: ammo += new ammo, if result of ammo += new ammo == ammo < 6 then: get the diference and create other ammo slot with the Remainder 
                     if (bag[i].GetComponent<Image>().enabled == false)
                     {
                         bag[i].GetComponent<Image>().enabled = true;
                         bag[i].GetComponent<Image>().sprite = collider2D.GetComponent<SpriteRenderer>().sprite;
+                        //bag[i].AddComponent<Text>().text = collider2D.GetComponent<Text>().text;
+                        if (collider2D.GetComponent<RevolverAmmoItem>()) // if is a revolver ammo item then add the script component
+                        {
+                            bag[i].AddComponent<RevolverAmmoItem>().ammo = collider2D.GetComponent<RevolverAmmoItem>().ammo;
+                            bag[i].GetComponent<RevolverAmmoItem>().title = collider2D.GetComponent<RevolverAmmoItem>().title;
+                            bag[i].GetComponent<RevolverAmmoItem>().description = collider2D.GetComponent<RevolverAmmoItem>().description;
+                        }
                         break;
                     }
                 }
@@ -59,6 +79,18 @@ public class Inventory : MonoBehaviour
             shootController.enabled = false;
 
             inv.SetActive(true);
+
+            itemDescription.ResetDescription();
+
+            Navegar();
+
+            if (bag[ID].GetComponent<Image>().enabled == true)
+            {
+                iSprite = bag[ID].GetComponent<Image>().sprite;
+                title = bag[ID].GetComponent<RevolverAmmoItem>().title;
+                description = bag[ID].GetComponent<RevolverAmmoItem>().description;
+                itemDescription.SetDescription(iSprite, title, description);
+            }
         }
         else
         {
@@ -69,9 +101,10 @@ public class Inventory : MonoBehaviour
             shootController.enabled = true;
         }
 
-        if (Input.GetKeyDown(KeyCode.I))
+        if (Input.GetKeyDown(KeyCode.Tab))
         {
             activate_inv = !activate_inv;
+
         }
     }
 
@@ -96,19 +129,19 @@ public class Inventory : MonoBehaviour
     }
 
     void Navegar(){
-        if (Input.GetAxisRaw("Horizontal") > 0 && ID<bag.Count-1) //right
+        if ((Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow)) && ID<bag.Count-1) //right if(e or right arrow)
         {
             ID++;
         }
-        if (Input.GetAxisRaw("Horizontal") < 0 && ID > 0) //right
+        if (Input.GetKeyDown(KeyCode.A) && ID > 0) //left
         {
             ID--;
         }
-        if (Input.GetAxisRaw("Vertical") > 0 && ID > 2) //right
+        if (Input.GetKeyDown(KeyCode.W) && ID > 2) //up
         {
             ID -= 3;
         }
-        if (Input.GetAxisRaw("Vertical") < 0 && ID < 6) //right
+        if (Input.GetKeyDown(KeyCode.S) && ID < 6) //down
         {
             ID += 3;
         }

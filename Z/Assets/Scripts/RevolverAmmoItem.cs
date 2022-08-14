@@ -4,13 +4,15 @@ using UnityEngine;
 
 public class RevolverAmmoItem : MonoBehaviour
 {
-    public string title = "Revolver ammo.";
-    public string description = "Revolver ammo.";
+    public string title;
+    public string description;
     public int ammo = 1;
 
     // Start is called before the first frame update
     void Start()
-    {
+    {  
+        title = "Cartridge";
+        description = "A cartridge or a round is a type of pre-assembled firearm ammunition packaging a projectile.";
         
     }
 

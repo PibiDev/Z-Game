@@ -54,7 +54,13 @@ public class Inventory : MonoBehaviour
                 
                 for (int i = 0; i < bag.Count; i++)
                 {
-                    //if is ammo and ammo <= 5 then: ammo += new ammo, if result of ammo += new ammo == ammo < 6 then: get the diference and create other ammo slot with the Remainder 
+                    if (bag[i].GetComponent<Image>().enabled == true && collider2D.GetComponent<RevolverAmmoItem>())
+                    {
+                        bag[i].GetComponent<RevolverAmmoItem>().ammo += collider2D.GetComponent<RevolverAmmoItem>().ammo;
+                        break;
+                    }
+
+                    //if is ammo and ammo <= 5 then: ammo += new ammo, if result of ammo += new ammo == ammo < 6 then: get the diference and create other ammo slot with the remainder 
                     if (bag[i].GetComponent<Image>().enabled == false)
                     {
                         bag[i].GetComponent<Image>().enabled = true;

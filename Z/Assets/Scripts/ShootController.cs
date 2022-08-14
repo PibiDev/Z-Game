@@ -22,7 +22,8 @@ public class ShootController : MonoBehaviour
 
     Inventory inventory;
     RevolverAmmoItem revolverAmmoItem;
-    //bool reload;
+    int totalAmmo;
+    int ammoRemainder;
 
     // Start is called before the first frame update
     void Start()
@@ -70,7 +71,7 @@ public class ShootController : MonoBehaviour
                 {
                     Debug.Log("bullet = true");
                     //isReloading = true;
-                    StartCoroutine(Reload());
+                    StartCoroutine(Reload(i));
                     //aT.ammoAmount += revolverAmmoItem.ammo;
                     //delete bullet item from inventory
                     DeleteAmmoInventory(i);
@@ -122,19 +123,48 @@ public class ShootController : MonoBehaviour
         aimAnimation.SetBool("IsShooting", aiming2); //Shoot the weapon
     }
 
-    IEnumerator Reload(){
+    IEnumerator Reload(int id){
         isReloading = true;
         Debug.Log("Reloadin");
         //add reloaging animation
-        yield return new WaitForSeconds(1);
-        Debug.Log("Reloaded");
-        aT.ammoAmount += revolverAmmoItem.ammo;
-        isReloading = false;
+        //aT.ammoAmount += revolverAmmoItem.ammo;
+        //for (int i = 0; i < inventory.bag.Count; i++) //search for ammo in the inventory
+        //{
+            //Debug.Log("searching ammo");
+           // if (inventory.bag[id].GetComponent<RevolverAmmoItem>()) //if there is ammo in the inventory then:
+            //{
+                //Debug.Log("ammo true");
+                totalAmmo = aT.ammoAmount + inventory.bag[id].GetComponent<RevolverAmmoItem>().ammo; //6
+                if (totalAmmo >= 6)
+                {
+                    ammoRemainder = Mathf.Abs(6 - totalAmmo); //3
+                    //Debug.Log(Mathf.Abs(ammoRemainder));
+                    aT.ammoAmount = totalAmmo - ammoRemainder; // 9-3
+                    yield return new WaitForSeconds(1);
+                    Debug.Log("Reloaded");
+                    isReloading = false;
+                }
+            //}
+        //} 
+        else{
+            yield return new WaitForSeconds(1);
+            Debug.Log("Reloaded");
+            isReloading = false;
+        }
+
     }
 
     void DeleteAmmoInventory(int id){
-        inventory.bag[id].GetComponent<Image>().enabled = false;
-        inventory.bag[id].GetComponent<Image>().sprite = null;
-        Destroy(inventory.bag[id].GetComponent<RevolverAmmoItem>());
+        if (ammoRemainder == 0)
+        {
+            inventory.bag[id].GetComponent<Image>().enabled = false;
+            inventory.bag[id].GetComponent<Image>().sprite = null;
+            Destroy(inventory.bag[id].GetComponent<RevolverAmmoItem>());
+        }
+        else{
+            inventory.bag[id].GetComponent<RevolverAmmoItem>().ammo = ammoRemainder;
+            //return;
+
+        }
     }
 }

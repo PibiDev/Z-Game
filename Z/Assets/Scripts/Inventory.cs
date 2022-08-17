@@ -27,9 +27,11 @@ public class Inventory : MonoBehaviour
     string title;
     string description;
     Sprite iSprite;
+    int quantity;
+    //ItemUI itemUI;
 
     void Awake(){
-        //itemDescription.ResetDescription();
+        itemDescription.ResetDescription();
     }
 
     // Start is called before the first frame update
@@ -54,23 +56,35 @@ public class Inventory : MonoBehaviour
                 
                 for (int i = 0; i < bag.Count; i++)
                 {
-                    if (bag[i].GetComponent<Image>().enabled == true && collider2D.GetComponent<RevolverAmmoItem>())
+                    Debug.Log("inventory slot: "+i);
+                    if (bag[i].GetComponent<Image>().enabled == true) // if there are a item
                     {
+                        if (bag[i].GetComponent<RevolverAmmoItem>() && collider2D.GetComponent<RevolverAmmoItem>()) // and that item is a revolver ammo
+                        {
                         bag[i].GetComponent<RevolverAmmoItem>().ammo += collider2D.GetComponent<RevolverAmmoItem>().ammo;
+                        quantity = bag[i].GetComponent<RevolverAmmoItem>().ammo;
+                        Debug.Log(quantity);
+                        bag[i].GetComponent<ItemUI>().SetQuantity(quantity.ToString());
                         break;
+                            
+                        }
                     }
 
-                    //if is ammo and ammo <= 5 then: ammo += new ammo, if result of ammo += new ammo == ammo < 6 then: get the diference and create other ammo slot with the remainder 
-                    if (bag[i].GetComponent<Image>().enabled == false)
+                    if (bag[i].GetComponent<Image>().enabled == false) // if inventory slot is empty
                     {
-                        bag[i].GetComponent<Image>().enabled = true;
-                        bag[i].GetComponent<Image>().sprite = collider2D.GetComponent<SpriteRenderer>().sprite;
-                        //bag[i].AddComponent<Text>().text = collider2D.GetComponent<Text>().text;
-                        if (collider2D.GetComponent<RevolverAmmoItem>()) // if is a revolver ammo item then add the script component
+                        bag[i].GetComponent<Image>().enabled = true; // image true
+                        bag[i].GetComponent<Image>().sprite = collider2D.GetComponent<SpriteRenderer>().sprite; //set sprite image
+                        
+                        if (collider2D.GetComponent<RevolverAmmoItem>()) // if is a revolver ammo item then add the script component and...
                         {
                             bag[i].AddComponent<RevolverAmmoItem>().ammo = collider2D.GetComponent<RevolverAmmoItem>().ammo;
                             bag[i].GetComponent<RevolverAmmoItem>().title = collider2D.GetComponent<RevolverAmmoItem>().title;
                             bag[i].GetComponent<RevolverAmmoItem>().description = collider2D.GetComponent<RevolverAmmoItem>().description;
+                            quantity = bag[i].GetComponent<RevolverAmmoItem>().ammo;
+                            Debug.Log(quantity);
+                            bag[i].GetComponent<ItemUI>().SetQuantity(quantity.ToString());
+                            
+                            //itemUI.SetQuantity(quantity.ToString());
                         }
                         break;
                     }
@@ -93,9 +107,13 @@ public class Inventory : MonoBehaviour
             if (bag[ID].GetComponent<Image>().enabled == true)
             {
                 iSprite = bag[ID].GetComponent<Image>().sprite;
-                title = bag[ID].GetComponent<RevolverAmmoItem>().title;
-                description = bag[ID].GetComponent<RevolverAmmoItem>().description;
-                itemDescription.SetDescription(iSprite, title, description);
+                if (bag[ID].GetComponent<RevolverAmmoItem>())
+                {
+                    title = bag[ID].GetComponent<RevolverAmmoItem>().title;
+                    description = bag[ID].GetComponent<RevolverAmmoItem>().description;
+                    itemDescription.SetDescription(iSprite, title, description);
+                    
+                }
             }
         }
         else

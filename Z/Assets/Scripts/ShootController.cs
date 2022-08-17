@@ -24,6 +24,9 @@ public class ShootController : MonoBehaviour
     RevolverAmmoItem revolverAmmoItem;
     int totalAmmo;
     int ammoRemainder;
+    
+    [SerializeField]
+    ItemUI itemUI;
 
     // Start is called before the first frame update
     void Start()
@@ -147,6 +150,9 @@ public class ShootController : MonoBehaviour
             //}
         //} 
         else{
+            Debug.Log("No >= 6");
+            ammoRemainder = 0;
+            aT.ammoAmount = totalAmmo;
             yield return new WaitForSeconds(1);
             Debug.Log("Reloaded");
             isReloading = false;
@@ -159,10 +165,13 @@ public class ShootController : MonoBehaviour
         {
             inventory.bag[id].GetComponent<Image>().enabled = false;
             inventory.bag[id].GetComponent<Image>().sprite = null;
+            itemUI.SetQuantity("");
             Destroy(inventory.bag[id].GetComponent<RevolverAmmoItem>());
         }
         else{
             inventory.bag[id].GetComponent<RevolverAmmoItem>().ammo = ammoRemainder;
+            
+            inventory.bag[id].GetComponent<ItemUI>().SetQuantity(ammoRemainder.ToString());
             //return;
 
         }

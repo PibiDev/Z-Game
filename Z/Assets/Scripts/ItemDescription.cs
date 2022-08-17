@@ -41,4 +41,5 @@ public class ItemDescription : MonoBehaviour
         this.title.text = iTitle;
         this.description.text = iDescription;
     }
+    
 }

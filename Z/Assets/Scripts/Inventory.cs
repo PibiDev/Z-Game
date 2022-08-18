@@ -105,7 +105,7 @@ public class Inventory : MonoBehaviour
             Navegar();
 
             if (bag[ID].GetComponent<Image>().enabled == true)
-            {
+            {   itemDescription.image.enabled = true;
                 iSprite = bag[ID].GetComponent<Image>().sprite;
                 if (bag[ID].GetComponent<RevolverAmmoItem>())
                 {
@@ -114,6 +114,14 @@ public class Inventory : MonoBehaviour
                     itemDescription.SetDescription(iSprite, title, description);
                     
                 }
+            }
+            else
+            {
+                itemDescription.image.enabled = false;
+                iSprite = null;
+                title = "Not found";
+                description = "Not found";
+                itemDescription.SetDescription(iSprite, title, description);
             }
         }
         else

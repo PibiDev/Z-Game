@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class ItemDescription : MonoBehaviour
 {   
     [SerializeField]
-    Image image;
+    public Image image;
     [SerializeField]
     TMP_Text title;
     [SerializeField]

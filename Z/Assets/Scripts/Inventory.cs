@@ -28,7 +28,6 @@ public class Inventory : MonoBehaviour
     string description;
     Sprite iSprite;
     int quantity;
-    //ItemUI itemUI;
 
     void Awake(){
         itemDescription.ResetDescription();
@@ -45,15 +44,12 @@ public class Inventory : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
-        //Navegar();
-
         take = Input.GetAxisRaw("Interact"); // E
 
             if (canTake == true && take > 0)
             {
                 Destroy(collider2D.gameObject);
-                
+
                 for (int i = 0; i < bag.Count; i++)
                 {
                     Debug.Log("inventory slot: "+i);
@@ -66,7 +62,6 @@ public class Inventory : MonoBehaviour
                         Debug.Log(quantity);
                         bag[i].GetComponent<ItemUI>().SetQuantity(quantity.ToString());
                         break;
-                            
                         }
                     }
 
@@ -83,8 +78,6 @@ public class Inventory : MonoBehaviour
                             quantity = bag[i].GetComponent<RevolverAmmoItem>().ammo;
                             Debug.Log(quantity);
                             bag[i].GetComponent<ItemUI>().SetQuantity(quantity.ToString());
-                            
-                            //itemUI.SetQuantity(quantity.ToString());
                         }
                         break;
                     }

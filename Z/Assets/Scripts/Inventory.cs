@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class Inventory : MonoBehaviour
 {
     public List<GameObject> bag = new List<GameObject>(); // List to store items
-    public GameObject inv;
+    public GameObject[] inv;
     public bool activate_inv;
 
     public PlayerController playerController;
@@ -29,7 +29,13 @@ public class Inventory : MonoBehaviour
     Sprite iSprite;
     int quantity;
 
-    void Awake(){
+    int pahseInv;
+    int iD_options;
+    public List<GameObject> options = new List<GameObject>(); // List to store items
+    public GameObject selectorOptions;
+
+    void Awake()
+    {
         itemDescription.ResetDescription();
     }
 
@@ -46,45 +52,52 @@ public class Inventory : MonoBehaviour
     {
         take = Input.GetAxisRaw("Interact"); // E
 
-            if (canTake == true && take > 0)
-            {
-                Destroy(collider2D.gameObject);
+        if (canTake == true && take > 0)
+        {
+            Destroy(collider2D.gameObject);
 
-                for (int i = 0; i < bag.Count; i++)
+            for (int i = 0; i < bag.Count; i++)
+            {
+                Debug.Log("inventory slot: " + i);
+                if (bag[i].GetComponent<Image>().enabled == true) // if there are an item
                 {
-                    Debug.Log("inventory slot: "+i);
-                    if (bag[i].GetComponent<Image>().enabled == true) // if there are a item
+                    if (bag[i].GetComponent<RevolverAmmoItem>() && collider2D.GetComponent<RevolverAmmoItem>()) // and that item is a revolver ammo
                     {
-                        if (bag[i].GetComponent<RevolverAmmoItem>() && collider2D.GetComponent<RevolverAmmoItem>()) // and that item is a revolver ammo
-                        {
                         bag[i].GetComponent<RevolverAmmoItem>().ammo += collider2D.GetComponent<RevolverAmmoItem>().ammo;
                         quantity = bag[i].GetComponent<RevolverAmmoItem>().ammo;
                         Debug.Log(quantity);
                         bag[i].GetComponent<ItemUI>().SetQuantity(quantity.ToString());
                         break;
-                        }
                     }
 
-                    if (bag[i].GetComponent<Image>().enabled == false) // if inventory slot is empty
-                    {
-                        bag[i].GetComponent<Image>().enabled = true; // image true
-                        bag[i].GetComponent<Image>().preserveAspect = true;
-                        bag[i].GetComponent<Image>().sprite = collider2D.GetComponent<SpriteRenderer>().sprite; //set sprite image
-                        
-                        if (collider2D.GetComponent<RevolverAmmoItem>()) // if is a revolver ammo item then add the script component and...
-                        {
-                            bag[i].AddComponent<RevolverAmmoItem>().ammo = collider2D.GetComponent<RevolverAmmoItem>().ammo;
-                            bag[i].GetComponent<RevolverAmmoItem>().title = collider2D.GetComponent<RevolverAmmoItem>().title;
-                            bag[i].GetComponent<RevolverAmmoItem>().description = collider2D.GetComponent<RevolverAmmoItem>().description;
-                            quantity = bag[i].GetComponent<RevolverAmmoItem>().ammo;
-                            Debug.Log(quantity);
-                            bag[i].GetComponent<ItemUI>().SetQuantity(quantity.ToString());
-                        }
-                        break;
-                    }
                 }
 
+                if (bag[i].GetComponent<Image>().enabled == false) // if inventory slot is empty
+                {
+                    bag[i].GetComponent<Image>().enabled = true; // image true
+                    bag[i].GetComponent<Image>().preserveAspect = true;
+                    bag[i].GetComponent<Image>().sprite = collider2D.GetComponent<SpriteRenderer>().sprite; //set sprite image (inventory slot)
+
+                    if (collider2D.GetComponent<RevolverAmmoItem>()) // if is a revolver ammo item then add the script component and...
+                    {
+                        bag[i].AddComponent<RevolverAmmoItem>().ammo = collider2D.GetComponent<RevolverAmmoItem>().ammo;
+                        bag[i].GetComponent<RevolverAmmoItem>().title = collider2D.GetComponent<RevolverAmmoItem>().title;
+                        bag[i].GetComponent<RevolverAmmoItem>().description = collider2D.GetComponent<RevolverAmmoItem>().description;
+                        quantity = bag[i].GetComponent<RevolverAmmoItem>().ammo;
+                        //Debug.Log(quantity);
+                        bag[i].GetComponent<ItemUI>().SetQuantity(quantity.ToString());
+                    }
+
+                    if (collider2D.GetComponent<BateItem>())
+                    {
+                        bag[i].AddComponent<BateItem>().title = collider2D.GetComponent<BateItem>().title;
+                        bag[i].AddComponent<BateItem>().description = collider2D.GetComponent<BateItem>().description;
+                    }
+                    break;
+                }
             }
+
+        }
 
         if (activate_inv)
         {
@@ -92,21 +105,34 @@ public class Inventory : MonoBehaviour
             playerController.enabled = false;
             shootController.enabled = false;
 
-            inv.SetActive(true);
+            inv[0].SetActive(true);
 
             itemDescription.ResetDescription();
 
             Navegar();
 
             if (bag[ID].GetComponent<Image>().enabled == true)
-            {   itemDescription.image.enabled = true;
+            {
+                itemDescription.image.enabled = true;
                 iSprite = bag[ID].GetComponent<Image>().sprite;
                 if (bag[ID].GetComponent<RevolverAmmoItem>())
                 {
                     title = bag[ID].GetComponent<RevolverAmmoItem>().title;
                     description = bag[ID].GetComponent<RevolverAmmoItem>().description;
                     itemDescription.SetDescription(iSprite, title, description);
-                    
+                }
+                if (bag[ID].GetComponent<BateItem>())
+                {
+                    title = bag[ID].GetComponent<BateItem>().title;
+                    description = bag[ID].GetComponent<BateItem>().description;
+                    itemDescription.SetDescription(iSprite, title, description);
+
+                }
+                //opens inventory options only on slots with items
+                if (Input.GetKeyDown(KeyCode.E) && activate_inv)
+                {
+                    pahseInv = 1;
+                    inv[1].transform.position = bag[ID].transform.position; //change the position of inventory options to selected item
                 }
             }
             else
@@ -120,8 +146,11 @@ public class Inventory : MonoBehaviour
         }
         else
         {
-            //close backpack sound efect
-            inv.SetActive(false);
+            //need close backpack sound efect
+
+            pahseInv = 0;
+            inv[1].SetActive(false);
+            inv[0].SetActive(false);
 
             playerController.enabled = true;
             shootController.enabled = true;
@@ -129,6 +158,8 @@ public class Inventory : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Tab))
         {
+            //pahseInv = 0;
+            //inv[1].SetActive(false);
             activate_inv = !activate_inv;
 
         }
@@ -149,28 +180,63 @@ public class Inventory : MonoBehaviour
         }
     }
 
-    void OnTriggerExit2D(Collider2D coll){
+    void OnTriggerExit2D(Collider2D coll)
+    {
         takeItemText.text.enabled = false;
         canTake = false;
     }
 
-    void Navegar(){
-        if ((Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow)) && ID<bag.Count-1) //right if(e or right arrow)
+    void Navegar()
+    {
+        switch (pahseInv)
         {
-            ID++;
+            case 0: //inventory
+                selector.SetActive(true);
+                inv[1].SetActive(false);
+                if ((Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow)) && ID < bag.Count - 1) //right if(e or right arrow)
+                {
+                    ID++;
+                }
+                if (Input.GetKeyDown(KeyCode.A) && ID > 0) //left
+                {
+                    ID--;
+                }
+                if (Input.GetKeyDown(KeyCode.W) && ID > 2) //up
+                {
+                    ID -= 3;
+                }
+                if (Input.GetKeyDown(KeyCode.S) && ID < 6) //down
+                {
+                    ID += 3;
+                }
+                selector.transform.position = bag[ID].transform.position;
+
+                /*
+                if (Input.GetKeyDown(KeyCode.E) && activate_inv)
+                {
+                    pahseInv = 1;
+                }
+                */
+
+                break;
+
+            case 1: //inventory options
+                inv[1].SetActive(true);
+
+                if (Input.GetKeyDown(KeyCode.W) && iD_options > 0)
+                {
+                    iD_options--;
+                }
+                if (Input.GetKeyDown(KeyCode.S) && iD_options < options.Count - 1)
+                {
+                    iD_options++;
+                }
+                selectorOptions.transform.position = options[iD_options].transform.position;
+                if (Input.GetKeyDown(KeyCode.Q) && activate_inv)
+                {
+                    pahseInv = 0;
+                }
+                break;
         }
-        if (Input.GetKeyDown(KeyCode.A) && ID > 0) //left
-        {
-            ID--;
-        }
-        if (Input.GetKeyDown(KeyCode.W) && ID > 2) //up
-        {
-            ID -= 3;
-        }
-        if (Input.GetKeyDown(KeyCode.S) && ID < 6) //down
-        {
-            ID += 3;
-        }
-        selector.transform.position = bag[ID].transform.position;
     }
 }

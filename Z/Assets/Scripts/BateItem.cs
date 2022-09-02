@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class BateItem : MonoBehaviour
 {
-    string title = "Bate";
-    string description = "A baseball bat is a smooth wooden or metal club used in the sport of baseball to hit the ball after it is thrown by the pitcher.";
+    public string title = "Bate";
+    public string description = "A baseball bat is a smooth wooden or metal club used in the sport of baseball to hit the ball after it is thrown by the pitcher.";
 
     // Start is called before the first frame update
     void Start()
@@ -19,6 +19,4 @@ public class BateItem : MonoBehaviour
         
     }
 
-    //cuando el item sea guardado en el inventario:
-    //Image component: Activar Preserve Ascpect
 }

@@ -38,6 +38,7 @@ public class ItemDescription : MonoBehaviour
     public void SetDescription(Sprite iSprite,string iTitle, string iDescription){
         this.image.gameObject.SetActive(true);
         this.image.sprite = iSprite;
+        this.image.preserveAspect = true;
         this.title.text = iTitle;
         this.description.text = iDescription;
     }

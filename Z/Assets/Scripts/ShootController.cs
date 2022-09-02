@@ -5,15 +5,15 @@ using UnityEngine.UI;
 
 public class ShootController : MonoBehaviour
 {
-    [HideInInspector] public float fireRate;
+    public float fireRate;
     public Transform firingPoint;
     public GameObject bulletPrefeb;
 
     float timeUntilFire;
     PlayerController pC;
 
-    [HideInInspector] public float aim; // Left click
-    [HideInInspector] public float aim2;// Right click
+    public float aim; // Left click
+    public float aim2;// Right click
     private Animator aimAnimation;
 
     TextSwitch tS;
@@ -21,12 +21,8 @@ public class ShootController : MonoBehaviour
     bool isReloading = false;
 
     Inventory inventory;
-    RevolverAmmoItem revolverAmmoItem;
     int totalAmmo;
     int ammoRemainder;
-
-    [SerializeField]
-    ItemUI itemUI;
 
     // Start is called before the first frame update
     void Start()
@@ -37,7 +33,6 @@ public class ShootController : MonoBehaviour
         tS = GameObject.Find("AmmoText").GetComponent<TextSwitch>();
         aT = GameObject.Find("AmmoText").GetComponent<AmmoText>();
         inventory = gameObject.GetComponent<Inventory>();
-        revolverAmmoItem = GameObject.Find("Revolver Ammo").GetComponent<RevolverAmmoItem>();
     }
 
     // Update is called once per frame

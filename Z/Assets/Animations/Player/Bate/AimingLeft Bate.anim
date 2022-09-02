@@ -6,7 +6,7 @@ AnimationClip:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Aiming
+  m_Name: AimingLeft Bate
   serializedVersion: 6
   m_Legacy: 0
   m_Compressed: 0
@@ -20,9 +20,9 @@ AnimationClip:
   m_PPtrCurves:
   - curve:
     - time: 0
-      value: {fileID: 8721867286965303897, guid: 99c4f443a8318864db4b6af98ff397a4, type: 3}
+      value: {fileID: -8645148356569135375, guid: 629c4d80b5d780440abac80cd7b30191, type: 3}
     - time: 0.4
-      value: {fileID: -515306277410056806, guid: 99c4f443a8318864db4b6af98ff397a4, type: 3}
+      value: {fileID: -9133705730312937290, guid: 629c4d80b5d780440abac80cd7b30191, type: 3}
     attribute: m_Sprite
     path: 
     classID: 212
@@ -42,8 +42,8 @@ AnimationClip:
       customType: 23
       isPPtrCurve: 1
     pptrCurveMapping:
-    - {fileID: 8721867286965303897, guid: 99c4f443a8318864db4b6af98ff397a4, type: 3}
-    - {fileID: -515306277410056806, guid: 99c4f443a8318864db4b6af98ff397a4, type: 3}
+    - {fileID: -8645148356569135375, guid: 629c4d80b5d780440abac80cd7b30191, type: 3}
+    - {fileID: -9133705730312937290, guid: 629c4d80b5d780440abac80cd7b30191, type: 3}
   m_AnimationClipSettings:
     serializedVersion: 2
     m_AdditiveReferencePoseClip: {fileID: 0}

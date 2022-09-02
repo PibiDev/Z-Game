@@ -6,7 +6,7 @@ AnimationClip:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Aiming
+  m_Name: ShootingLightOn Bate
   serializedVersion: 6
   m_Legacy: 0
   m_Compressed: 0
@@ -20,9 +20,15 @@ AnimationClip:
   m_PPtrCurves:
   - curve:
     - time: 0
-      value: {fileID: 8721867286965303897, guid: 99c4f443a8318864db4b6af98ff397a4, type: 3}
+      value: {fileID: 6379277086931043586, guid: 8b5c69938a344a340a1b4df30f648705, type: 3}
+    - time: 0.1
+      value: {fileID: 6768515477666071366, guid: 8b5c69938a344a340a1b4df30f648705, type: 3}
+    - time: 0.2
+      value: {fileID: 8287990002529443717, guid: 8b5c69938a344a340a1b4df30f648705, type: 3}
+    - time: 0.3
+      value: {fileID: 4865483081094587700, guid: 8b5c69938a344a340a1b4df30f648705, type: 3}
     - time: 0.4
-      value: {fileID: -515306277410056806, guid: 99c4f443a8318864db4b6af98ff397a4, type: 3}
+      value: {fileID: 8802508114485294459, guid: 8b5c69938a344a340a1b4df30f648705, type: 3}
     attribute: m_Sprite
     path: 
     classID: 212
@@ -42,8 +48,11 @@ AnimationClip:
       customType: 23
       isPPtrCurve: 1
     pptrCurveMapping:
-    - {fileID: 8721867286965303897, guid: 99c4f443a8318864db4b6af98ff397a4, type: 3}
-    - {fileID: -515306277410056806, guid: 99c4f443a8318864db4b6af98ff397a4, type: 3}
+    - {fileID: 6379277086931043586, guid: 8b5c69938a344a340a1b4df30f648705, type: 3}
+    - {fileID: 6768515477666071366, guid: 8b5c69938a344a340a1b4df30f648705, type: 3}
+    - {fileID: 8287990002529443717, guid: 8b5c69938a344a340a1b4df30f648705, type: 3}
+    - {fileID: 4865483081094587700, guid: 8b5c69938a344a340a1b4df30f648705, type: 3}
+    - {fileID: 8802508114485294459, guid: 8b5c69938a344a340a1b4df30f648705, type: 3}
   m_AnimationClipSettings:
     serializedVersion: 2
     m_AdditiveReferencePoseClip: {fileID: 0}

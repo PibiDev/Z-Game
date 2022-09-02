@@ -9,8 +9,8 @@ public class Inventory : MonoBehaviour
     public GameObject inv;
     public bool activate_inv;
 
-    PlayerController playerController;
-    ShootController shootController;
+    public PlayerController playerController;
+    public ShootController shootController;
 
     TakeItemText takeItemText;
     float take;
@@ -36,8 +36,8 @@ public class Inventory : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        playerController = gameObject.GetComponent<PlayerController>();
-        shootController = gameObject.GetComponent<ShootController>();
+        //playerController = gameObject.GetComponent<PlayerController>();
+        //shootController = gameObject.GetComponent<ShootController>();
         takeItemText = GameObject.Find("Take Item").GetComponent<TakeItemText>();
     }
 
@@ -68,6 +68,7 @@ public class Inventory : MonoBehaviour
                     if (bag[i].GetComponent<Image>().enabled == false) // if inventory slot is empty
                     {
                         bag[i].GetComponent<Image>().enabled = true; // image true
+                        bag[i].GetComponent<Image>().preserveAspect = true;
                         bag[i].GetComponent<Image>().sprite = collider2D.GetComponent<SpriteRenderer>().sprite; //set sprite image
                         
                         if (collider2D.GetComponent<RevolverAmmoItem>()) // if is a revolver ammo item then add the script component and...

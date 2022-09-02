@@ -6,13 +6,13 @@ public class TextSwitch : MonoBehaviour
 {
     AmmoText aT;
     TextSwitch tS;
-    ShootController sC;
+    public ShootController sC;
     Animator animator;
 
     // Start is called before the first frame update
     void Start()
     {
-        sC = GameObject.Find("Player").GetComponent<ShootController>();
+        //sC = GameObject.Find("Player").GetComponent<ShootController>();
         aT = gameObject.GetComponent<AmmoText>();
         tS = gameObject.GetComponent<TextSwitch>();
         animator = gameObject.GetComponent<Animator>();

@@ -34,6 +34,12 @@ public class Inventory : MonoBehaviour
     public List<GameObject> options = new List<GameObject>(); // List to store items
     public GameObject selectorOptions;
 
+    bool canTake2;
+
+    int optionsNum;
+
+    bool equipable;
+
     void Awake()
     {
         itemDescription.ResetDescription();
@@ -93,6 +99,11 @@ public class Inventory : MonoBehaviour
                         bag[i].AddComponent<BateItem>().title = collider2D.GetComponent<BateItem>().title;
                         bag[i].AddComponent<BateItem>().description = collider2D.GetComponent<BateItem>().description;
                     }
+                    if (collider2D.GetComponent<RevolverItem>())
+                    {
+                        bag[i].AddComponent<RevolverItem>().title = collider2D.GetComponent<RevolverItem>().title;
+                        bag[i].AddComponent<RevolverItem>().description = collider2D.GetComponent<RevolverItem>().description;
+                    }
                     break;
                 }
             }
@@ -101,6 +112,8 @@ public class Inventory : MonoBehaviour
 
         if (activate_inv)
         {
+            canTake = false; // player cant take items when is on inventory screen
+
             //open backpack sound efect
             playerController.enabled = false;
             shootController.enabled = false;
@@ -115,25 +128,27 @@ public class Inventory : MonoBehaviour
             {
                 itemDescription.image.enabled = true;
                 iSprite = bag[ID].GetComponent<Image>().sprite;
-                if (bag[ID].GetComponent<RevolverAmmoItem>())
+                if (bag[ID].GetComponent<RevolverAmmoItem>()) //send gun description to cellphone
                 {
                     title = bag[ID].GetComponent<RevolverAmmoItem>().title;
                     description = bag[ID].GetComponent<RevolverAmmoItem>().description;
                     itemDescription.SetDescription(iSprite, title, description);
                 }
-                if (bag[ID].GetComponent<BateItem>())
+                if (bag[ID].GetComponent<BateItem>()) //send bate description to cellphone
                 {
                     title = bag[ID].GetComponent<BateItem>().title;
                     description = bag[ID].GetComponent<BateItem>().description;
                     itemDescription.SetDescription(iSprite, title, description);
 
                 }
-                //opens inventory options only on slots with items
-                if (Input.GetKeyDown(KeyCode.E) && activate_inv)
+                if (bag[ID].GetComponent<RevolverItem>()) //send bate description to cellphone
                 {
-                    pahseInv = 1;
-                    inv[1].transform.position = bag[ID].transform.position; //change the position of inventory options to selected item
+                    title = bag[ID].GetComponent<RevolverItem>().title;
+                    description = bag[ID].GetComponent<RevolverItem>().description;
+                    itemDescription.SetDescription(iSprite, title, description);
+
                 }
+
             }
             else
             {
@@ -143,9 +158,14 @@ public class Inventory : MonoBehaviour
                 description = "Not found";
                 itemDescription.SetDescription(iSprite, title, description);
             }
+
         }
-        else
+        else //close inventory
         {
+            if (canTake2) // if player is on item which is able to take player could do it when inventory closes
+            {
+                canTake = true;
+            }
             //need close backpack sound efect
 
             pahseInv = 0;
@@ -163,6 +183,10 @@ public class Inventory : MonoBehaviour
             activate_inv = !activate_inv;
 
         }
+
+        //opens inventory options only on slots with items
+        Equip();
+        OpenInventoryOptions();
     }
 
     void OnTriggerEnter2D(Collider2D coll)
@@ -173,6 +197,7 @@ public class Inventory : MonoBehaviour
             takeItemText.text.enabled = true;
 
             canTake = true;
+            canTake2 = true;
 
             collider2D = coll;
 
@@ -184,6 +209,7 @@ public class Inventory : MonoBehaviour
     {
         takeItemText.text.enabled = false;
         canTake = false;
+        canTake2 = false;
     }
 
     void Navegar()
@@ -221,6 +247,10 @@ public class Inventory : MonoBehaviour
                 break;
 
             case 1: //inventory options
+                //Debug.Log(iD_options);
+
+                inv[1].SetActive(true);
+                /*
                 inv[1].SetActive(true);
 
                 if (Input.GetKeyDown(KeyCode.W) && iD_options > 0)
@@ -231,12 +261,103 @@ public class Inventory : MonoBehaviour
                 {
                     iD_options++;
                 }
+
                 selectorOptions.transform.position = options[iD_options].transform.position;
+
                 if (Input.GetKeyDown(KeyCode.Q) && activate_inv)
                 {
                     pahseInv = 0;
                 }
+                */
+                switch (optionsNum)
+                {
+                    case 1:
+                        break;
+
+                    case 2:
+
+                        if (Input.GetKeyDown(KeyCode.W) && iD_options > 0)
+                        {
+                            iD_options--;
+                        }
+                        if (Input.GetKeyDown(KeyCode.S) && iD_options < options.Count - 1)
+                        {
+                            iD_options++;
+                        }
+
+                        selectorOptions.transform.position = options[iD_options].transform.position;
+
+                        if (iD_options == 0)
+                        {
+                            iD_options++;
+                        }
+
+                        if (Input.GetKeyDown(KeyCode.Q) && activate_inv)
+                        {
+                            pahseInv = 0;
+                        }
+                        break;
+
+                    case 3:
+                        if (Input.GetKeyDown(KeyCode.W) && iD_options > 0)
+                        {
+                            iD_options--;
+                        }
+                        if (Input.GetKeyDown(KeyCode.S) && iD_options < options.Count - 1)
+                        {
+                            iD_options++;
+                        }
+
+                        selectorOptions.transform.position = options[iD_options].transform.position;
+
+                        if (Input.GetKeyDown(KeyCode.Q) && activate_inv)
+                        {
+                            pahseInv = 0;
+                        }
+                        break;
+                }
                 break;
+        }
+    }
+
+    void OpenInventoryOptions()
+    {
+        if (Input.GetKeyDown(KeyCode.E) && activate_inv && bag[ID].GetComponent<Image>().enabled && pahseInv == 0)
+        {
+            pahseInv = 1; //shows the inventory options
+            inv[1].transform.position = bag[ID].transform.position; //change the position of inventory options to selected item
+
+            if (bag[ID].GetComponent<BateItem>() || bag[ID].GetComponent<RevolverItem>()) //equipables
+            {
+                options[0].SetActive(true); //equip
+                options[1].SetActive(false);
+                options[2].SetActive(true); //discard
+
+                optionsNum = 2;
+                iD_options = 1;
+
+                equipable = true;
+            }
+            else
+            {
+                options[0].SetActive(false); //equip
+                options[1].SetActive(true); //use
+                options[2].SetActive(true); //discard
+
+                optionsNum = 2;
+                iD_options = 1;
+
+                equipable = false;
+            }
+        }
+    }
+
+    void Equip()
+    {
+        if (equipable && iD_options == 1 && Input.GetKeyDown(KeyCode.E) && pahseInv == 1)
+        {
+            Debug.Log("equiped");
+
         }
     }
 }

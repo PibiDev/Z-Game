@@ -2,10 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BateItem : MonoBehaviour
+public class RevolverItem : MonoBehaviour
 {
-    public string title = "Bate";
-    public string description = "A baseball bat is a smooth wooden or metal club used in the sport of baseball to hit the ball after it is thrown by the pitcher.";
+    public string title = "Revolver";
+    public string description = "Revolver description.";
     public bool isEquiped = false;
 
     // Start is called before the first frame update
@@ -19,5 +19,4 @@ public class BateItem : MonoBehaviour
     {
         
     }
-
 }

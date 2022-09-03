@@ -24,6 +24,8 @@ public class ShootController : MonoBehaviour
     int totalAmmo;
     int ammoRemainder;
 
+    public GameObject equipdSlot;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -38,59 +40,78 @@ public class ShootController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        aim = Input.GetAxisRaw("Aim"); //(Right)click 1, left ctrl
-        AimAnimation();
-
-        aim2 = Input.GetAxisRaw("Shoot"); //(Left)click 0, space bar
-        aimAnimation.SetBool("IsShooting", false); //Turn off IsShooting parameter on the animator (Aiming2 -> Shooting)
-
-        if (aT.ammoAmount == 6 && Input.GetKeyDown(KeyCode.R))
+        if (equipdSlot.GetComponent<RevolverItem>()) //can use revolver functions only if is equiped
         {
-            Debug.Log("can't reload");
-            return;
-        }
+            //Debug.Log("equipdSlot.GetComponent<RevolverItem>()");
+            aim = Input.GetAxisRaw("Aim"); //(Right)click 1, left ctrl
+            AimAnimation();
 
-        if (aT.ammoAmount < 6 && Input.GetKeyDown(KeyCode.R)) // Reload "R"
-        {
-            Debug.Log("R");
+            aim2 = Input.GetAxisRaw("Shoot"); //(Left)click 0, space bar
+            aimAnimation.SetBool("IsShooting", false); //Turn off IsShooting parameter on the animator (Aiming2 -> Shooting)
 
-            if (isReloading)
+            if (aT.ammoAmount == 6 && Input.GetKeyDown(KeyCode.R))
             {
-                Debug.Log("isReloading return");
+                Debug.Log("can't reload");
                 return;
             }
 
-            for (int i = 0; i < inventory.bag.Count; i++)
+            if (aT.ammoAmount < 6 && Input.GetKeyDown(KeyCode.R)) // Reload "R"
             {
-                if (inventory.bag[i].GetComponent<RevolverAmmoItem>())
+                Debug.Log("R");
+
+                if (isReloading)
                 {
-                    Debug.Log("bullet = true");
-                    StartCoroutine(Reload(i));
-                    DeleteAmmoInventory(i);
-                    break;
+                    Debug.Log("isReloading return");
+                    return;
                 }
+
+                for (int i = 0; i < inventory.bag.Count; i++)
+                {
+                    if (inventory.bag[i].GetComponent<RevolverAmmoItem>())
+                    {
+                        //Debug.Log("bullet = true");
+                        StartCoroutine(Reload(i));
+                        DeleteAmmoInventory(i);
+                        break;
+                    }
+                }
+            }
+
+            if (aim > 0)
+            {
+                tS.enabled = true;
+            }
+
+            if (((aim2 > 0 && timeUntilFire < Time.time) && aim > 0) && aT.ammoAmount > 0)
+            {//Player can shoot only if right mouse button is pressing and player
+                Shoot();
+                aT.ammoAmount--; //bullet counter -1
+                timeUntilFire = Time.time + fireRate;
+            }
+
+            if (((aim2 > 0 && timeUntilFire < Time.time) && aim > 0) && aT.ammoAmount <= 0)
+            {
+                Debug.Log("out of ammo");
+                // need sound efect
             }
         }
 
-        if (aim > 0)
+        if (equipdSlot.GetComponent<BateItem>()) //if bate item is equiped
         {
-            tS.enabled = true;
+            aim = Input.GetAxisRaw("Aim"); //(Right)click 1, left ctrl
+            AimAnimation();
+
+            aim2 = Input.GetAxisRaw("Shoot"); //(Left)click 0, space bar
+            aimAnimation.SetBool("IsShooting", false);
+
+            if (((aim2 > 0 && timeUntilFire < Time.time) && aim > 0) && aT.ammoAmount > 0)
+            {//Player can shoot only if right mouse button is pressing and player
+
+                ShootingAnimation();
+
+                timeUntilFire = Time.time + fireRate;
+            }
         }
-
-        if (((aim2 > 0 && timeUntilFire < Time.time) && aim > 0) && aT.ammoAmount > 0)
-        {//Player can shoot only if right mouse button is pressing and player
-            Shoot();
-            aT.ammoAmount--; //bullet counter -1
-            timeUntilFire = Time.time + fireRate;
-        }
-
-        if (((aim2 > 0 && timeUntilFire < Time.time) && aim > 0) && aT.ammoAmount <= 0)
-        {
-            Debug.Log("out of ammo");
-            // need sound efect
-        }
-
-
     }
 
     void Shoot()
@@ -145,10 +166,10 @@ public class ShootController : MonoBehaviour
     {
         if (ammoRemainder == 0)
         {
-            inventory.bag[id].GetComponent<Image>().enabled = false;
-            inventory.bag[id].GetComponent<Image>().sprite = null;
+            inventory.bag[id].GetComponent<Image>().sprite = null; //delete sprite
+            inventory.bag[id].GetComponent<Image>().enabled = false; //desactivate image component
             inventory.bag[id].GetComponent<ItemUI>().SetQuantity("");
-            Destroy(inventory.bag[id].GetComponent<RevolverAmmoItem>());
+            Destroy(inventory.bag[id].GetComponent<RevolverAmmoItem>());//delete script
         }
         else
         {
@@ -157,4 +178,5 @@ public class ShootController : MonoBehaviour
             inventory.bag[id].GetComponent<ItemUI>().SetQuantity(ammoRemainder.ToString());
         }
     }
+
 }

@@ -8,10 +8,12 @@ public class ChangeWeapon : MonoBehaviour
     public AnimatorOverrideController revolver;
     public AnimatorOverrideController bate;
 
+    PlayerController playerController;
+
     // Start is called before the first frame update
     void Start()
     {
-        
+        playerController = GetComponent<PlayerController>();
     }
 
     // Update is called once per frame
@@ -22,9 +24,19 @@ public class ChangeWeapon : MonoBehaviour
 
     public void Revolver(){
         GetComponent<Animator>().runtimeAnimatorController = revolver as RuntimeAnimatorController;
+        if (playerController.isFacingRight == false)
+        {
+            playerController.IdleAnimation(Vector2.left);
+            
+        }
     }
 
     public void Bate(){
         GetComponent<Animator>().runtimeAnimatorController = bate as RuntimeAnimatorController;
+        if (playerController.isFacingRight == false)
+        {
+            playerController.IdleAnimation(Vector2.left);
+            
+        }
     }
 }

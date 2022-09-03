@@ -16,7 +16,6 @@ public class PlayerController : MonoBehaviour
     Transform lantern; //Point light
     ShootController sC; //ShootController
 
-    ChangeWeapon changeWeapon;
     bool isChanged = false;
 
     // Start is called before the first frame update
@@ -32,14 +31,13 @@ public class PlayerController : MonoBehaviour
         lantern = transform.Find("Lantern");
         lantern.localPosition = new Vector3(0.1f, 0.06f, -0.201f);
 
-        changeWeapon = GetComponent<ChangeWeapon>();
     }
 
     // Update is called once per frame
     void Update()
     {
         ProcessInputs();
-        ChangeAnimations();
+        //ChangeAnimations();
     }
 
     void ProcessInputs() //Function wich detect if the player are moving
@@ -128,7 +126,7 @@ public class PlayerController : MonoBehaviour
         animator.SetFloat("x", direccion.x); //Transition to left or right on the animator
     }
 
-    void Direccion()
+    public void Direccion()
     {
         if (direccion.x != 0)
         {
@@ -152,21 +150,9 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    void ChangeAnimations(){
-        if (isChanged){
-            changeWeapon.Bate();
-        }
-        
-        else
-        {
-            changeWeapon.Revolver();
-        }
-
-        if (Input.GetKeyDown(KeyCode.C))
-        {
-            isChanged = !isChanged;
-
-        }
+    public void IdleAnimation(Vector2 direccion)
+    {
+        animator.SetFloat("x", direccion.x); //Transition to left or right on the animator
     }
 
 }

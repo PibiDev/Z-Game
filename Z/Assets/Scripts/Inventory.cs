@@ -39,6 +39,11 @@ public class Inventory : MonoBehaviour
     int optionsNum;
 
     bool equipable;
+    public GameObject equipSlot;
+    public GameObject equipSlotData;
+    bool isInventoryOptionsOpen = false;
+    ChangeWeapon changeWeapon;
+
 
     void Awake()
     {
@@ -51,6 +56,7 @@ public class Inventory : MonoBehaviour
         //playerController = gameObject.GetComponent<PlayerController>();
         //shootController = gameObject.GetComponent<ShootController>();
         takeItemText = GameObject.Find("Take Item").GetComponent<TakeItemText>();
+        changeWeapon = GetComponent<ChangeWeapon>();
     }
 
     // Update is called once per frame
@@ -62,51 +68,7 @@ public class Inventory : MonoBehaviour
         {
             Destroy(collider2D.gameObject);
 
-            for (int i = 0; i < bag.Count; i++)
-            {
-                Debug.Log("inventory slot: " + i);
-                if (bag[i].GetComponent<Image>().enabled == true) // if there are an item
-                {
-                    if (bag[i].GetComponent<RevolverAmmoItem>() && collider2D.GetComponent<RevolverAmmoItem>()) // and that item is a revolver ammo
-                    {
-                        bag[i].GetComponent<RevolverAmmoItem>().ammo += collider2D.GetComponent<RevolverAmmoItem>().ammo;
-                        quantity = bag[i].GetComponent<RevolverAmmoItem>().ammo;
-                        Debug.Log(quantity);
-                        bag[i].GetComponent<ItemUI>().SetQuantity(quantity.ToString());
-                        break;
-                    }
-
-                }
-
-                if (bag[i].GetComponent<Image>().enabled == false) // if inventory slot is empty
-                {
-                    bag[i].GetComponent<Image>().enabled = true; // image true
-                    bag[i].GetComponent<Image>().preserveAspect = true;
-                    bag[i].GetComponent<Image>().sprite = collider2D.GetComponent<SpriteRenderer>().sprite; //set sprite image (inventory slot)
-
-                    if (collider2D.GetComponent<RevolverAmmoItem>()) // if is a revolver ammo item then add the script component and...
-                    {
-                        bag[i].AddComponent<RevolverAmmoItem>().ammo = collider2D.GetComponent<RevolverAmmoItem>().ammo;
-                        bag[i].GetComponent<RevolverAmmoItem>().title = collider2D.GetComponent<RevolverAmmoItem>().title;
-                        bag[i].GetComponent<RevolverAmmoItem>().description = collider2D.GetComponent<RevolverAmmoItem>().description;
-                        quantity = bag[i].GetComponent<RevolverAmmoItem>().ammo;
-                        //Debug.Log(quantity);
-                        bag[i].GetComponent<ItemUI>().SetQuantity(quantity.ToString());
-                    }
-
-                    if (collider2D.GetComponent<BateItem>())
-                    {
-                        bag[i].AddComponent<BateItem>().title = collider2D.GetComponent<BateItem>().title;
-                        bag[i].AddComponent<BateItem>().description = collider2D.GetComponent<BateItem>().description;
-                    }
-                    if (collider2D.GetComponent<RevolverItem>())
-                    {
-                        bag[i].AddComponent<RevolverItem>().title = collider2D.GetComponent<RevolverItem>().title;
-                        bag[i].AddComponent<RevolverItem>().description = collider2D.GetComponent<RevolverItem>().description;
-                    }
-                    break;
-                }
-            }
+            StoreItem();
 
         }
 
@@ -183,10 +145,6 @@ public class Inventory : MonoBehaviour
             activate_inv = !activate_inv;
 
         }
-
-        //opens inventory options only on slots with items
-        Equip();
-        OpenInventoryOptions();
     }
 
     void OnTriggerEnter2D(Collider2D coll)
@@ -217,7 +175,9 @@ public class Inventory : MonoBehaviour
         switch (pahseInv)
         {
             case 0: //inventory
+                //Debug.Log("switch (pahseInv) = case 0 inventario");
                 selector.SetActive(true);
+                selectorOptions.SetActive(false);
                 inv[1].SetActive(false);
                 if ((Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow)) && ID < bag.Count - 1) //right if(e or right arrow)
                 {
@@ -237,44 +197,49 @@ public class Inventory : MonoBehaviour
                 }
                 selector.transform.position = bag[ID].transform.position;
 
-                /*
-                if (Input.GetKeyDown(KeyCode.E) && activate_inv)
+                if (Input.GetKeyDown(KeyCode.E) && activate_inv && pahseInv == 0 && bag[ID].GetComponent<Image>().enabled)
                 {
-                    pahseInv = 1;
+                    if (bag[ID].GetComponent<BateItem>() || bag[ID].GetComponent<RevolverItem>()) //equipables
+                    {
+                        options[0].SetActive(true); //equip
+                        options[1].SetActive(false);//use
+                        options[2].SetActive(true); //discard
+
+                        optionsNum = 2; //numero de opciones que se mostraran en el menu de opciones
+                        iD_options = 1; //en que opcion va aparecer el selector de opciones por defecto
+
+                        equipable = true; //si es equipable o no
+
+                    }
+                    else // no equipables (usables)
+                    {
+                        options[0].SetActive(false); //equip
+                        options[1].SetActive(true); //use
+                        options[2].SetActive(true); //discard
+
+                        optionsNum = 2;
+                        iD_options = 1;
+
+                        equipable = false;
+                    }
+                    pahseInv = 1; //shows the inventory options (pasa el case 1 del switch) 
+                    inv[1].transform.position = bag[ID].transform.position; //change the position of inventory options to selected item
                 }
-                */
 
                 break;
 
             case 1: //inventory options
-                //Debug.Log(iD_options);
-
+                //Debug.Log("switch (pahseInv) = case 1 inventario opciones");
                 inv[1].SetActive(true);
-                /*
-                inv[1].SetActive(true);
-
-                if (Input.GetKeyDown(KeyCode.W) && iD_options > 0)
-                {
-                    iD_options--;
-                }
-                if (Input.GetKeyDown(KeyCode.S) && iD_options < options.Count - 1)
-                {
-                    iD_options++;
-                }
-
-                selectorOptions.transform.position = options[iD_options].transform.position;
-
-                if (Input.GetKeyDown(KeyCode.Q) && activate_inv)
-                {
-                    pahseInv = 0;
-                }
-                */
-                switch (optionsNum)
+                selector.SetActive(false);
+                selectorOptions.SetActive(true);
+                switch (optionsNum) //numero de opciones en el menu de opciones
                 {
                     case 1:
                         break;
 
                     case 2:
+                        //Debug.Log("switch (optionsNum) = case 2");
 
                         if (Input.GetKeyDown(KeyCode.W) && iD_options > 0)
                         {
@@ -286,6 +251,7 @@ public class Inventory : MonoBehaviour
                         }
 
                         selectorOptions.transform.position = options[iD_options].transform.position;
+                        //Debug.Log("iD_options: " + iD_options);
 
                         if (iD_options == 0)
                         {
@@ -294,8 +260,115 @@ public class Inventory : MonoBehaviour
 
                         if (Input.GetKeyDown(KeyCode.Q) && activate_inv)
                         {
-                            pahseInv = 0;
+                            pahseInv = 0; //regresa al case 0 (sale del menu opciones)
                         }
+
+                        if (Input.GetKeyDown(KeyCode.E)) // equipar, usar o descartar
+                        {
+                            if (equipable) // cuando el item es equipable
+                            {
+                                //Debug.Log("equipable");
+                                switch (iD_options)
+                                {
+                                    case 1: // equipar
+                                        Debug.Log("equipado");
+
+                                        if (equipSlot.GetComponent<Image>().enabled)
+                                        { //ya hay algo equipado
+                                            if (equipSlot.GetComponent<BateItem>()) //es un bate
+                                            {
+                                                equipSlotData.GetComponent<Image>().sprite = equipSlot.GetComponent<Image>().sprite;
+                                                equipSlotData.AddComponent<BateItem>();
+
+                                                equipSlot.GetComponent<Image>().sprite = bag[ID].GetComponent<Image>().sprite;
+                                                equipSlot.AddComponent<RevolverItem>();
+                                                Destroy(equipSlot.GetComponent<BateItem>());
+
+                                                bag[ID].GetComponent<Image>().sprite = equipSlotData.GetComponent<Image>().sprite;
+                                                bag[ID].AddComponent<BateItem>();
+                                                Destroy(bag[ID].GetComponent<RevolverItem>());
+
+                                                changeWeapon.Revolver();
+                                                equipSlot.GetComponent<RevolverItem>().isEquiped = true;
+                                            }
+
+                                            else // equipSlot.GetComponent<RevolverItem>() //es un revolver
+                                            {
+                                                equipSlotData.GetComponent<Image>().sprite = equipSlot.GetComponent<Image>().sprite;
+                                                equipSlotData.AddComponent<RevolverItem>();
+
+                                                equipSlot.GetComponent<Image>().sprite = bag[ID].GetComponent<Image>().sprite;
+                                                equipSlot.AddComponent<BateItem>();
+                                                Destroy(equipSlot.GetComponent<RevolverItem>());
+
+                                                bag[ID].GetComponent<Image>().sprite = equipSlotData.GetComponent<Image>().sprite;
+                                                bag[ID].AddComponent<RevolverItem>();
+                                                Destroy(bag[ID].GetComponent<BateItem>());
+
+                                                changeWeapon.Bate();
+                                                equipSlot.GetComponent<BateItem>().isEquiped = true;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            if (bag[ID].GetComponent<RevolverItem>())
+                                            {
+                                                //loads bag[ID] components to equipSlot components
+                                                equipSlot.GetComponent<Image>().enabled = true;
+                                                equipSlot.GetComponent<Image>().sprite = bag[ID].GetComponent<Image>().sprite;
+                                                equipSlot.GetComponent<Image>().preserveAspect = true;
+                                                equipSlot.AddComponent<RevolverItem>(); //add component to equiped slot
+
+                                                bag[ID].GetComponent<Image>().sprite = null; //delete sprite
+                                                bag[ID].GetComponent<Image>().enabled = false; //desactivate image component
+                                                Destroy(bag[ID].GetComponent<RevolverItem>());
+
+                                                changeWeapon.Revolver();
+                                                equipSlot.GetComponent<RevolverItem>().isEquiped = true;
+                                            }
+
+                                            if (bag[ID].GetComponent<BateItem>())
+                                            {
+                                                //loads bag[ID] components to equipSlot components
+                                                equipSlot.GetComponent<Image>().enabled = true;
+                                                equipSlot.GetComponent<Image>().sprite = bag[ID].GetComponent<Image>().sprite;
+                                                equipSlot.GetComponent<Image>().preserveAspect = true;
+                                                equipSlot.AddComponent<BateItem>(); //add component to equiped slot
+
+                                                bag[ID].GetComponent<Image>().sprite = null; //delete sprite
+                                                bag[ID].GetComponent<Image>().enabled = false; //desactivate image component
+                                                Destroy(bag[ID].GetComponent<BateItem>());
+
+                                                changeWeapon.Bate();
+                                                equipSlot.GetComponent<BateItem>().isEquiped = true;
+                                            }
+                                        }
+
+                                        pahseInv = 0;
+                                        break;
+                                    case 2: // descartar
+                                        Debug.Log("descartado");
+                                        pahseInv = 0;
+                                        break;
+                                }
+                            }
+                            else
+                            { //cuando el item es usable (no equipable) 
+                                //Debug.Log("usable");
+                                switch (iD_options)
+                                {
+                                    case 1: // usar
+                                        Debug.Log("usado");
+                                        pahseInv = 0;
+                                        break;
+                                    case 2: // descartar
+                                        Debug.Log("descartado");
+                                        pahseInv = 0;
+                                        break;
+                                }
+                            }
+                        }
+
                         break;
 
                     case 3:
@@ -320,44 +393,55 @@ public class Inventory : MonoBehaviour
         }
     }
 
-    void OpenInventoryOptions()
+    void StoreItem()
     {
-        if (Input.GetKeyDown(KeyCode.E) && activate_inv && bag[ID].GetComponent<Image>().enabled && pahseInv == 0)
+        for (int i = 0; i < bag.Count; i++)
         {
-            pahseInv = 1; //shows the inventory options
-            inv[1].transform.position = bag[ID].transform.position; //change the position of inventory options to selected item
-
-            if (bag[ID].GetComponent<BateItem>() || bag[ID].GetComponent<RevolverItem>()) //equipables
+            //Debug.Log("inventory slot: " + i);
+            if (bag[i].GetComponent<Image>().enabled == true) // if there are an item
             {
-                options[0].SetActive(true); //equip
-                options[1].SetActive(false);
-                options[2].SetActive(true); //discard
+                if (bag[i].GetComponent<RevolverAmmoItem>() && collider2D.GetComponent<RevolverAmmoItem>()) // and that item is a revolver ammo
+                {
+                    bag[i].GetComponent<RevolverAmmoItem>().ammo += collider2D.GetComponent<RevolverAmmoItem>().ammo;
+                    quantity = bag[i].GetComponent<RevolverAmmoItem>().ammo;
+                    Debug.Log(quantity);
+                    bag[i].GetComponent<ItemUI>().SetQuantity(quantity.ToString());
+                    break;
+                }
 
-                optionsNum = 2;
-                iD_options = 1;
-
-                equipable = true;
             }
-            else
+
+            if (bag[i].GetComponent<Image>().enabled == false) // if inventory slot is empty
             {
-                options[0].SetActive(false); //equip
-                options[1].SetActive(true); //use
-                options[2].SetActive(true); //discard
+                bag[i].GetComponent<Image>().enabled = true; // image true
+                bag[i].GetComponent<Image>().preserveAspect = true;
+                bag[i].GetComponent<Image>().sprite = collider2D.GetComponent<SpriteRenderer>().sprite; //set sprite image (inventory slot)
 
-                optionsNum = 2;
-                iD_options = 1;
+                if (collider2D.GetComponent<RevolverAmmoItem>()) // if is a revolver ammo item then add the script component and...
+                {
+                    bag[i].AddComponent<RevolverAmmoItem>().ammo = collider2D.GetComponent<RevolverAmmoItem>().ammo;
+                    bag[i].GetComponent<RevolverAmmoItem>().title = collider2D.GetComponent<RevolverAmmoItem>().title;
+                    bag[i].GetComponent<RevolverAmmoItem>().description = collider2D.GetComponent<RevolverAmmoItem>().description;
+                    quantity = bag[i].GetComponent<RevolverAmmoItem>().ammo;
+                    //Debug.Log(quantity);
+                    bag[i].GetComponent<ItemUI>().SetQuantity(quantity.ToString());
+                }
 
-                equipable = false;
+                if (collider2D.GetComponent<BateItem>())
+                {
+                    bag[i].AddComponent<BateItem>();
+                    bag[i].GetComponent<BateItem>().title = collider2D.GetComponent<BateItem>().title;
+                    bag[i].GetComponent<BateItem>().description = collider2D.GetComponent<BateItem>().description;
+                }
+                if (collider2D.GetComponent<RevolverItem>())
+                {
+                    bag[i].AddComponent<RevolverItem>();
+                    bag[i].GetComponent<RevolverItem>().title = collider2D.GetComponent<RevolverItem>().title;
+                    bag[i].GetComponent<RevolverItem>().description = collider2D.GetComponent<RevolverItem>().description;
+                }
+                break;
             }
         }
     }
 
-    void Equip()
-    {
-        if (equipable && iD_options == 1 && Input.GetKeyDown(KeyCode.E) && pahseInv == 1)
-        {
-            Debug.Log("equiped");
-
-        }
-    }
 }

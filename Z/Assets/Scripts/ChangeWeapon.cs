@@ -7,6 +7,7 @@ public class ChangeWeapon : MonoBehaviour
 
     public AnimatorOverrideController revolver;
     public AnimatorOverrideController bate;
+    public AnimatorOverrideController withouthWeapon;
 
     PlayerController playerController;
 
@@ -33,6 +34,15 @@ public class ChangeWeapon : MonoBehaviour
 
     public void Bate(){
         GetComponent<Animator>().runtimeAnimatorController = bate as RuntimeAnimatorController;
+        if (playerController.isFacingRight == false)
+        {
+            playerController.IdleAnimation(Vector2.left);
+            
+        }
+    }
+
+    public void WithoutWeapon(){
+        GetComponent<Animator>().runtimeAnimatorController = withouthWeapon as RuntimeAnimatorController;
         if (playerController.isFacingRight == false)
         {
             playerController.IdleAnimation(Vector2.left);

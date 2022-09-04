@@ -104,7 +104,7 @@ public class ShootController : MonoBehaviour
             aim2 = Input.GetAxisRaw("Shoot"); //(Left)click 0, space bar
             aimAnimation.SetBool("IsShooting", false);
 
-            if (((aim2 > 0 && timeUntilFire < Time.time) && aim > 0) && aT.ammoAmount > 0)
+            if (((aim2 > 0 && timeUntilFire < Time.time) && aim > 0))
             {//Player can shoot only if right mouse button is pressing and player
 
                 ShootingAnimation();

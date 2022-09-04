@@ -4410,7 +4410,7 @@ Animator:
   m_GameObject: {fileID: 901135421}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 774e64e268fc7cb45bc2b562082ccd0e, type: 2}
+  m_Controller: {fileID: 9100000, guid: 6687ed6f2c5acbd479e1a39b081a5967, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -4517,6 +4517,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   revolver: {fileID: 22100000, guid: 394d0978d845a114d963e82f921e482e, type: 2}
   bate: {fileID: 22100000, guid: ffb6d14c4a781414e81e3548bbdb3565, type: 2}
+  withouthWeapon: {fileID: 22100000, guid: d9917713188e0c94c96c68bb180e3e24, type: 2}
 --- !u!1 &909358347
 GameObject:
   m_ObjectHideFlags: 0

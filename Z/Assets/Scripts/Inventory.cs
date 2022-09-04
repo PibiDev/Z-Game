@@ -41,7 +41,6 @@ public class Inventory : MonoBehaviour
     bool equipable;
     public GameObject equipSlot;
     public GameObject equipSlotData;
-    bool isInventoryOptionsOpen = false;
     ChangeWeapon changeWeapon;
 
 

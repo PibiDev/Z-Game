@@ -16,8 +16,6 @@ public class PlayerController : MonoBehaviour
     Transform lantern; //Point light
     ShootController sC; //ShootController
 
-    bool isChanged = false;
-
     // Start is called before the first frame update
     void Start()
     {

@@ -9,6 +9,7 @@ public class PlayerController : MonoBehaviour
     public bool isFacingRight = true;
     public Vector2 direccion;
     public float run;
+    public bool isAiming = false;
 
     //References
     private Animator animator;
@@ -92,23 +93,32 @@ public class PlayerController : MonoBehaviour
         if (sC.aim > 0)
         {
             animator.SetLayerWeight(1, 0);
-            if (moveHorizontal > 0.1f)//Right = +
+            if (sC.timeUntilFire < Time.time)
             {
-                direccion += Vector2.right;
-                fP.localPosition = new Vector3(0.1f, 0.06f, 0);//FiringPoint turn right
-                lantern.localPosition = new Vector3(0.1f, 0.06f, -0.201f); // lantern
+                if (isAiming)
+                {
+                    return;
+                }
+                if (moveHorizontal > 0.1f)//Right = +
+                {
+                    direccion += Vector2.right;
+                    AimingDireccion();
+                    fP.localPosition = new Vector3(0.1f, 0.06f, 0);//FiringPoint turn right
+                    lantern.localPosition = new Vector3(0.1f, 0.06f, -0.201f); // lantern
 
-                isFacingRight = true;
-            }
-            if (moveHorizontal < -0.1f)//Left = -
-            {
-                direccion += Vector2.left;
-                fP.localPosition = new Vector3(-0.1f, 0.06f, 0);//FiringPoint turn left
-                lantern.localPosition = new Vector3(-0.1f, 0.06f, -0.201f); //lantern
+                    isFacingRight = true;
+                }
+                if (moveHorizontal < -0.1f)//Left = -
+                {
+                    direccion += Vector2.left;
+                    AimingDireccion();
+                    fP.localPosition = new Vector3(-0.1f, 0.06f, 0);//FiringPoint turn left
+                    lantern.localPosition = new Vector3(-0.1f, 0.06f, -0.201f); //lantern
 
-                isFacingRight = false;
+                    isFacingRight = false;
+                }
             }
-            AimingDireccion();
+            //AimingDireccion();
         }
     }
 

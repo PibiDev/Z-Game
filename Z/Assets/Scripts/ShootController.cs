@@ -5,16 +5,17 @@ using UnityEngine.UI;
 
 public class ShootController : MonoBehaviour
 {
-    public float fireRate;
+    float fireRate;
+    float HitRate;
     public Transform firingPoint;
     public GameObject bulletPrefeb;
 
-    float timeUntilFire;
+    public float timeUntilFire;
     PlayerController pC;
 
     public float aim; // Left click
     public float aim2;// Right click
-    private Animator aimAnimation;
+    public Animator aimAnimation;
 
     TextSwitch tS;
     AmmoText aT;
@@ -26,10 +27,13 @@ public class ShootController : MonoBehaviour
 
     public GameObject equipdSlot;
 
+    public bool isAiming = false;
+
     // Start is called before the first frame update
     void Start()
     {
-        fireRate = 1;
+        fireRate = 0.65f;
+        HitRate = 0.97f; //37 frames bate
         pC = gameObject.GetComponent<PlayerController>();
         aimAnimation = GetComponent<Animator>();
         tS = GameObject.Find("AmmoText").GetComponent<TextSwitch>();
@@ -40,13 +44,14 @@ public class ShootController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        aim = Input.GetAxisRaw("Aim"); //(Right)click 1, left ctrl
+        aim2 = Input.GetAxisRaw("Shoot"); //(Left)click 0, space bar
+
         if (equipdSlot.GetComponent<RevolverItem>()) //can use revolver functions only if is equiped
         {
             //Debug.Log("equipdSlot.GetComponent<RevolverItem>()");
-            aim = Input.GetAxisRaw("Aim"); //(Right)click 1, left ctrl
             AimAnimation();
 
-            aim2 = Input.GetAxisRaw("Shoot"); //(Left)click 0, space bar
             aimAnimation.SetBool("IsShooting", false); //Turn off IsShooting parameter on the animator (Aiming2 -> Shooting)
 
             if (aT.ammoAmount == 6 && Input.GetKeyDown(KeyCode.R))
@@ -84,9 +89,13 @@ public class ShootController : MonoBehaviour
 
             if (((aim2 > 0 && timeUntilFire < Time.time) && aim > 0) && aT.ammoAmount > 0)
             {//Player can shoot only if right mouse button is pressing and player
-                Shoot();
+                if (isAiming)
+                {
+                    return;
+                }
                 aT.ammoAmount--; //bullet counter -1
                 timeUntilFire = Time.time + fireRate;
+                Shoot();
             }
 
             if (((aim2 > 0 && timeUntilFire < Time.time) && aim > 0) && aT.ammoAmount <= 0)
@@ -96,20 +105,20 @@ public class ShootController : MonoBehaviour
             }
         }
 
+        //primero se tiene que mover antes que atacar
         if (equipdSlot.GetComponent<BateItem>()) //if bate item is equiped
         {
-            aim = Input.GetAxisRaw("Aim"); //(Right)click 1, left ctrl
+
             AimAnimation();
 
-            aim2 = Input.GetAxisRaw("Shoot"); //(Left)click 0, space bar
             aimAnimation.SetBool("IsShooting", false);
 
             if (((aim2 > 0 && timeUntilFire < Time.time) && aim > 0))
             {//Player can shoot only if right mouse button is pressing and player
 
+                timeUntilFire = Time.time + HitRate;
                 ShootingAnimation();
 
-                timeUntilFire = Time.time + fireRate;
             }
         }
     }
@@ -117,8 +126,8 @@ public class ShootController : MonoBehaviour
     void Shoot()
     { //Function wich set the shoot direction
         float angle = pC.isFacingRight ? 0f : 180f;
-        Instantiate(bulletPrefeb, firingPoint.position, Quaternion.Euler(new Vector3(0f, 0f, angle)));
         ShootingAnimation();
+        Instantiate(bulletPrefeb, firingPoint.position, Quaternion.Euler(new Vector3(0f, 0f, angle)));
     }
 
     void AimAnimation() //Animation for aiming
@@ -126,7 +135,6 @@ public class ShootController : MonoBehaviour
         bool aiming = aim != 0 ? true : false;
         aimAnimation.SetBool("Aiming", aiming);//Up the weapon
         aimAnimation.SetBool("IsAiming", aiming);//Hold the weapon
-
     }
 
     void ShootingAnimation()
@@ -144,18 +152,18 @@ public class ShootController : MonoBehaviour
         if (totalAmmo >= 6)
         {
             ammoRemainder = Mathf.Abs(6 - totalAmmo); //3
-            aT.ammoAmount = totalAmmo - ammoRemainder; // 9-3
             yield return new WaitForSeconds(1);
+            aT.ammoAmount = totalAmmo - ammoRemainder; // 9-3
             Debug.Log("Reloaded");
             isReloading = false;
         }
 
         else
         {
-            Debug.Log("No >= 6");
+            //Debug.Log("No >= 6");
             ammoRemainder = 0;
-            aT.ammoAmount = totalAmmo;
             yield return new WaitForSeconds(1);
+            aT.ammoAmount = totalAmmo;
             Debug.Log("Reloaded");
             isReloading = false;
         }

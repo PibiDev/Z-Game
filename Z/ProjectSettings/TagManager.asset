@@ -5,16 +5,19 @@ TagManager:
   serializedVersion: 2
   tags:
   - Item
+  - Bullet
+  - Zombie
+  - Hit
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Z
   - Water
   - UI
   - Camera Bounds
   - Item
-  - 
+  - Zombies
   - 
   - 
   - 
